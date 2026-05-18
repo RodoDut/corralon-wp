@@ -1,0 +1,25 @@
+# WordPress core (no se versiona)
+wp-admin/
+wp-includes/
+wp-*.php
+index.php
+xmlrpc.php
+license.txt
+readme.html
+
+# Uploads (archivos de usuario, no código)
+wp-content/uploads/
+
+# Plugins de terceros (se instalan vía WP, no se versionan)
+wp-content/plugins/
+
+# Temas de terceros
+wp-content/themes/twenty*/
+
+# Docker y entorno local
+docker-compose.yml
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db
