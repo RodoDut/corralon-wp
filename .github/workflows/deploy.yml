@@ -20,7 +20,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
-          script: echo "SSH OK"
+          script: find ~/public_html/corralon/wp-content/plugins/ -maxdepth 2 -type d
+          
 
       - name: Crear carpeta del plugin si no existe
         uses: appleboy/ssh-action@v1.0.3
