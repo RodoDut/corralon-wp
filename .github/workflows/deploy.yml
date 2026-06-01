@@ -41,3 +41,12 @@ jobs:
           source: "."
           target: "~/public_html/corralon/wp-content/plugins/corralon-materiales"
           strip_components: 0
+
+      - name: Verificar contenido deployado
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 65002
+          script: ls ~/public_html/corralon/wp-content/plugins/corralon-materiales/
