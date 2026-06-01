@@ -1,7 +1,7 @@
 # Estado actual — Corralón Materiales
 
 ## Última sesión
-F02 — Detalle de producto completado y verificado. Refactor carrito.js aplicado.
+F04 — Historial de presupuestos completado. MVP cerrado.
 
 ## Completado
 
@@ -15,6 +15,10 @@ F02 — Detalle de producto completado y verificado. Refactor carrito.js aplicad
 - `Producto` (entidad): id, nombre, precio, precio_oferta, categorias (array), stock, descripcion, sku, imagen_url
 - `ProductoRepository`: findAll(), findPaginado(), contarTotal(), getCategorias(), findById()
 - `ProductoRepositoryInterface`: contrato completo con los 5 métodos
+- `Presupuesto` (entidad): id, nombre, email, telefono, mensaje, lineas, estado, nota_interna, fecha
+- `PresupuestoEstado`: PENDIENTE / RESPONDIDO
+- `PresupuestoRepository`: guardar(), findAll(), findById(), contarTotal(), actualizarEstado(), actualizarNota()
+- `PresupuestoRepositoryInterface`: contrato completo con los 6 métodos
 - `LineaPresupuesto`, `SolicitudPresupuesto` (entidades de dominio)
 - `CarritoRepository` / `CarritoRepositoryInterface`
 - `MailerInterface` / `WpMailer`
@@ -39,12 +43,17 @@ F02 — Detalle de producto completado y verificado. Refactor carrito.js aplicad
   - Sección de productos relacionados por categoría (máx 4, excluye el producto actual)
   - Assets con filemtime, cargados condicionalmente solo en is_product()
   - <!-- FASE 2: precio --> marcado en plantilla y JS
+- F04 ✅ — Historial de presupuestos (panel admin)
+  - CPT 'presupuesto': no público, sin menú nativo, datos en post_meta
+  - PresupuestoService persiste antes de enviar el email
+  - Submenú WooCommerce → Presupuestos (capacidad manage_woocommerce)
+  - Listado paginado con badges de estado (pendiente/respondido)
+  - Vista de detalle: datos cliente, tabla de productos, total estimado
+  - Gestión de estado y nota interna con formularios nativos WordPress + nonce
+  - AdminPresupuestosController procesa POST en admin_init con check_admin_referer()
 
 ### Arquitectura JS
-- `carrito.js` — módulo compartido que expone `window.rdtCarrito.agregarAlCarrito()`
-  Captura el texto original del botón antes de modificarlo (genérico, no hardcodeado)
-  Registrado con `wp_register_script` (idempotente) y declarado como dependencia en
-  CatalogoHooks y ProductoDetalleHooks — WordPress garantiza el orden de carga
+- `carrito.js` — módulo compartido, expone `window.rdtCarrito.agregarAlCarrito()`
 - `catalogo.js` — tabs + carga infinita + IntersectionObserver, delega carrito a rdtCarrito
 - `detalle.js` — botón principal + relacionados, delega carrito a rdtCarrito
 
@@ -61,14 +70,23 @@ F02 — Detalle de producto completado y verificado. Refactor carrito.js aplicad
 - wp_register_script() idempotente: registrar el mismo handle múltiples veces es seguro
 - Módulo JS compartido via window global + dependencias de WordPress
 - DRY aplicado a assets JS: extraer lógica común a módulo independiente
+- CPT como capa de persistencia: wp_insert_post + post_meta para datos de dominio
+- wp_update_post() post-insert para título con ID
+- check_admin_referer() + wp_safe_redirect() + exit: patrón seguro para POST en admin
+- sanitize_key() / sanitize_textarea_field(): sanitización por tipo de dato
+- Roles WordPress: Shop Manager con manage_woocommerce para clientes de negocio
 - Verificación estática de código con Claude vía MCP
 
-## Pendiente MVP
-- F04 — Historial de presupuestos (panel admin)
-- Eliminar shortcode de prueba `ShortcodeProductosTest` antes de producción
+## Pendiente — Fase 2
+- Mostrar precios en catálogo y detalle (marcadores <!-- FASE 2: precio --> ya colocados)
+- Pasarelas de pago: MercadoPago o Stripe
+- Botón "Finalizar compra" nativo de WooCommerce (oculto en MVP)
+- Eliminar shortcode de prueba `ShortcodeProductosTest`
 
 ## Próxima sesión
-F04 — Historial de presupuestos en panel admin de WordPress.
+Definir prioridades post-MVP: precio + pasarela, o deploy a producción primero.
 
 ## Deuda técnica conocida
 - `is_cart()` en capa UI (`CarritoPresupuestoHooks`) — aceptable para MVP
+- `guardar()` en PresupuestoService no maneja fallo del repositorio — agregar logging en Fase 2
+- `contarTotal()` con posts_per_page=-1 — suficiente para MVP, revisar con volúmenes altos
