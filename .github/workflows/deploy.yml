@@ -29,7 +29,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
-          script: mkdir -p ~/public_html/corralon/wp-content/plugins/corralon-materiales
+          script: mkdir -p ~/public_html/corralon/wp-content/plugins/corralon-materiales && ls ~/public_html/corralon/wp-content/plugins/
 
       - name: Sync archivos
         uses: appleboy/scp-action@v0.1.7
