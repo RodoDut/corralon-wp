@@ -42,3 +42,15 @@ jobs:
           source: "."
           target: "~/public_html/corralon/wp-content/plugins/corralon-materiales"
           strip_components: 0
+          rm: true
+
+      - name: Limpiar archivos que no son del plugin
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 65002
+          script: |
+            cd ~/public_html/corralon/wp-content/plugins/corralon-materiales
+            rm -rf .git .github .vscode wp-content docker-compose.yml ESTADO_ACTUAL.md SPEC.md
