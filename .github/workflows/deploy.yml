@@ -13,44 +13,41 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
 
+      - name: Instalar dependencias PHP (Composer)
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 65002 -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
       - name: Verificar conexión SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          script: ls -la ~/public_html/corralon/wp-content/plugins/
-          
+        run: |
+          ssh -p 65002 -i ~/.ssh/id_rsa \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "ls -la public_html/corralon/wp-content/plugins/ && echo 'Conexión OK'"
 
       - name: Crear carpeta del plugin si no existe
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          script: mkdir -p ~/public_html/corralon/wp-content/plugins/corralon-materiales
+        run: |
+          ssh -p 65002 -i ~/.ssh/id_rsa \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p public_html/corralon/wp-content/plugins/corralon-materiales"
 
-      - name: Sync archivos
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          source: "."
-          target: "~/public_html/corralon/wp-content/plugins/corralon-materiales"
-          strip_components: 0
-          rm: true
-
-      - name: Limpiar archivos que no son del plugin
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          script: |
-            cd ~/public_html/corralon/wp-content/plugins/corralon-materiales
-            rm -rf .git .github .vscode wp-content docker-compose.yml ESTADO_ACTUAL.md SPEC.md
+      - name: Sync archivos via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.vscode' \
+            --exclude='docker-compose.yml' \
+            --exclude='docker-compose.override.yml' \
+            --exclude='ESTADO_ACTUAL.md' \
+            --exclude='SPEC.md' \
+            --exclude='wp-content' \
+            --exclude='.env' \
+            --exclude='*.log' \
+            -e "ssh -p 65002 -i ~/.ssh/id_rsa" \
+            ./ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/corralon/wp-content/plugins/corralon-materiales/"
