@@ -1,0 +1,38 @@
+{
+    "intelephense.environment.phpVersion": "8.1",
+    "intelephense.environment.includePaths": [
+        "wp-content/plugins/corralon-materiales/vendor/php-stubs/wordpress-stubs",
+        "wp-content/plugins/corralon-materiales/vendor/php-stubs/woocommerce-stubs"
+    ],
+    "intelephense.stubs": [
+        "Core",
+        "standard",
+        "pcre",
+        "SPL",
+        "json",
+        "date",
+        "hash",
+        "mbstring",
+        "mysqli",
+        "openssl",
+        "PDO",
+        "session",
+        "SimpleXML",
+        "xml",
+        "xmlreader",
+        "xmlwriter",
+        "zip",
+        "zlib",
+        "curl",
+        "filter",
+        "gd",
+        "iconv",
+        "intl",
+        "libxml",
+        "Reflection",
+        "dom",
+        "fileinfo",
+        "tokenizer",
+        "wordpress"
+    ]
+}
