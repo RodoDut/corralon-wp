@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
-          script: find ~/public_html/corralon/wp-content/plugins/ -maxdepth 2 -type d
+          script: ls -la ~/public_html/corralon/wp-content/plugins/
           
 
       - name: Crear carpeta del plugin si no existe
