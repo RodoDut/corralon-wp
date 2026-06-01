@@ -1,25 +1,15 @@
-# WordPress core (no se versiona)
-wp-admin/
-wp-includes/
-wp-*.php
-index.php
-xmlrpc.php
-license.txt
-readme.html
+# Dependencias PHP (instalar con composer install)
+vendor/
 
-# Uploads (archivos de usuario, no código)
-wp-content/uploads/
+# Logs
+*.log
 
-# Plugins de terceros (se instalan vía WP, no se versionan)
-wp-content/plugins/
-
-# Temas de terceros
-wp-content/themes/twenty*/
-
-# Docker y entorno local
-docker-compose.yml
+# Variables de entorno locales
 .env
 
-# Sistema
+# Override local de Docker Compose
+docker-compose.override.yml
+
+# Sistema operativo
 .DS_Store
 Thumbs.db

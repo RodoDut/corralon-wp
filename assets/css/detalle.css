@@ -1,0 +1,144 @@
+/* ================================================================
+   F02 — Detalle de producto
+   ================================================================ */
+
+/* ---- Contenedor principal ---- */
+.rdt-detalle-wrap {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 16px 48px;
+}
+
+/* ---- Layout dos columnas ---- */
+.rdt-detalle__columnas {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    gap: 40px;
+    align-items: start;
+    margin-bottom: 56px;
+}
+
+@media (max-width: 768px) {
+    .rdt-detalle__columnas {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+/* ---- Imagen ---- */
+.rdt-detalle__imagen {
+    position: sticky;
+    top: 24px;
+}
+
+.rdt-detalle__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+    object-fit: cover;
+}
+
+.rdt-detalle__img-placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #ebebeb;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .rdt-detalle__imagen {
+        position: static;
+    }
+}
+
+/* ---- Info: columna derecha ---- */
+.rdt-detalle__info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rdt-detalle__nombre {
+    margin: 0;
+    font-size: 1.75em;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #111;
+}
+
+/* ---- Badges (mismo estilo que catálogo) ---- */
+.rdt-detalle__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ---- Descripción ---- */
+.rdt-detalle__descripcion {
+    font-size: 1em;
+    line-height: 1.65;
+    color: #444;
+}
+
+.rdt-detalle__descripcion p:first-child {
+    margin-top: 0;
+}
+
+.rdt-detalle__descripcion p:last-child {
+    margin-bottom: 0;
+}
+
+/* FASE 2: precio */
+
+/* ---- Botón solicitar presupuesto ---- */
+.rdt-detalle__btn-presupuesto {
+    align-self: flex-start;
+    padding: .65em 1.6em;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.rdt-detalle__btn-presupuesto:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+/* ---- Relacionados ---- */
+.rdt-relacionados {
+    border-top: 1px solid #e4e4e4;
+    padding-top: 40px;
+}
+
+.rdt-relacionados__titulo {
+    margin: 0 0 24px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #222;
+}
+
+.rdt-relacionados__grilla {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .rdt-relacionados__grilla {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ---- Link de tarjeta (sin decoración) ---- */
+.catalogo-card__link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.catalogo-card__link:hover {
+    text-decoration: none;
+    color: inherit;
+}

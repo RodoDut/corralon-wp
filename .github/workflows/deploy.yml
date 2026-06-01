@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
           script: echo "SSH OK"
-        
+
       - name: Crear carpeta del plugin si no existe
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -29,7 +29,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
-          script: mkdir -p ~/public_html/corralon/wp-content/plugins/corralon-materiales && ls ~/public_html/corralon/wp-content/plugins/
+          script: mkdir -p ~/public_html/corralon/wp-content/plugins/corralon-materiales
 
       - name: Sync archivos
         uses: appleboy/scp-action@v0.1.7
@@ -41,12 +41,3 @@ jobs:
           source: "."
           target: "~/public_html/corralon/wp-content/plugins/corralon-materiales"
           strip_components: 0
-
-      - name: Verificar contenido deployado
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
-          script: ls ~/public_html/corralon/wp-content/plugins/corralon-materiales/

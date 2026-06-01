@@ -1,0 +1,21 @@
+{
+    "name": "rdtecno/corralon-materiales",
+    "description": "Plugin WordPress para gestión de productos de corralonería",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "RDT\\Corralon\\": "includes/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "require-dev": {
+        "php-stubs/wordpress-stubs": "^6.9",
+        "php-stubs/woocommerce-stubs": "^10.7"
+    }
+}

@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: corralon_db
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: corralon_db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_pass
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DEBUG_LOG: 1
+      WORDPRESS_DEBUG_DISPLAY: 1
+      WORDPRESS_SMTP_HOST: mailhog
+      WORDPRESS_SMTP_PORT: 1025
+    volumes:
+      - ./:/var/www/html/wp-content/plugins/corralon-materiales
+    depends_on:
+      - mailhog
+
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # UI web
+
+volumes:
+  db_data:

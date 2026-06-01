@@ -1,0 +1,151 @@
+/* ---- Botón en el carrito ---- */
+/*
+ * Las clases "button alt checkout-button wp-element-button" heredan colores y
+ * radios del tema. Aquí fijamos los valores de tamaño y peso que WooCommerce
+ * define en .wc-proceed-to-checkout .checkout-button, por si el tema no los
+ * aplica o el orden de carga los pisa.
+ */
+#rdt-solicitar-presupuesto.rdt-presupuesto-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: .6180469716em 1.41575em;
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.41575;
+    text-align: center;
+    white-space: nowrap;
+    margin-bottom: .5em;
+    cursor: pointer;
+}
+
+/* ---- Overlay ---- */
+#rdt-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 99999;
+}
+
+/* ---- Modal ---- */
+#rdt-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 6px;
+    padding: 32px;
+    width: 90%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+#rdt-modal h2 {
+    margin-top: 0;
+    font-size: 1.4em;
+}
+
+#rdt-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+}
+
+#rdt-modal-close:hover {
+    color: #000;
+}
+
+/* Oculta el enlace nativo "Ir a finalizar la compra" de WooCommerce. */
+/* Se usa el contenedor .wc-proceed-to-checkout como ancla para máxima */
+/* especificidad sin depender de clases que varían entre versiones de WC. */
+.wc-proceed-to-checkout a.checkout-button {
+    display: none !important;
+}
+
+/* ---- Formulario ---- */
+#rdt-presupuesto-form label {
+    display: block;
+    margin-bottom: 14px;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+#rdt-presupuesto-form label span {
+    color: #c00;
+}
+
+#rdt-presupuesto-form input,
+#rdt-presupuesto-form textarea {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 9px 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    font-weight: 400;
+    font-family: inherit;
+}
+
+#rdt-presupuesto-form input:focus,
+#rdt-presupuesto-form textarea:focus {
+    outline: 2px solid #0073aa;
+    border-color: #0073aa;
+}
+
+#rdt-presupuesto-form textarea {
+    resize: vertical;
+}
+
+#rdt-presupuesto-form [type=submit] {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#rdt-form-error {
+    display: none;
+    color: #c00;
+    font-size: 0.9em;
+    margin: 8px 0 0;
+}
+
+/* ---- Popup confirmación ---- */
+#rdt-confirmacion {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2e7d32;
+    color: #fff;
+    padding: 16px 28px;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 600;
+    z-index: 99999;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    #rdt-modal {
+        padding: 20px;
+    }
+
+    #rdt-confirmacion {
+        white-space: normal;
+        text-align: center;
+        width: 85%;
+    }
+}

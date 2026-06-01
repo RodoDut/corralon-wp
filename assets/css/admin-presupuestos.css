@@ -1,0 +1,77 @@
+/* ================================================================
+   F04 — Panel admin de presupuestos
+   ================================================================ */
+
+/* ---- Badges de estado ---- */
+.rdt-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: .8em;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.rdt-badge--pendiente {
+    background: #fef3cd;
+    color: #856404;
+    border: 1px solid #f0d060;
+}
+
+.rdt-badge--respondido {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+/* ---- Secciones de detalle ---- */
+.rdt-presupuestos__seccion {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.rdt-presupuestos__seccion:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.rdt-presupuestos__seccion h2 {
+    font-size: .85em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #777;
+    margin-bottom: 14px;
+}
+
+/* ---- Tabla de datos del cliente ---- */
+.rdt-presupuestos__tabla-datos th {
+    width: 130px;
+    padding-left: 0;
+    font-weight: 600;
+}
+
+/* ---- Total en pie de tabla ---- */
+.rdt-total-label {
+    text-align: right;
+}
+
+/* ---- Gestión: separación entre formularios ---- */
+.rdt-presupuestos__gestion form + form {
+    margin-top: 24px;
+}
+
+/* ---- Paginación ---- */
+.rdt-presupuestos__paginacion {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rdt-presupuestos__paginacion .displaying-num {
+    color: #555;
+    font-size: .9em;
+}
