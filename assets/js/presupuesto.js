@@ -34,7 +34,7 @@
         $('#rdt-presupuesto-form [name=nombre]').trigger('focus');
     });
 
-    // Cerrar modal al hacer clic en overlay o en el botón de cierre
+    // Cerrar modal
     $(document).on('click', '#rdt-modal-close', function () {
         $('#rdt-modal-overlay').fadeOut(200);
     });
@@ -45,7 +45,6 @@
         }
     });
 
-    // Cerrar con Escape
     $(document).on('keydown', function (e) {
         if (e.key === 'Escape' && $('#rdt-modal-overlay').is(':visible')) {
             $('#rdt-modal-overlay').fadeOut(200);
@@ -63,36 +62,55 @@
         $error.text('').hide();
         $btn.prop('disabled', true).text('Enviando…');
 
-        $.ajax({
-            url:    rdtPresupuesto.apiUrl,
-            method: 'POST',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('X-WP-Nonce', rdtPresupuesto.nonce);
-            },
-            data: {
-                nombre:   $form.find('[name=nombre]').val(),
-                email:    $form.find('[name=email]').val(),
-                telefono: $form.find('[name=telefono]').val(),
-                mensaje:  $form.find('[name=mensaje]').val(),
-            },
-            success: function (response) {
-                if (response.success) {
-                    $('#rdt-modal-overlay').fadeOut(200);
-                    $form[0].reset();
-                    mostrarConfirmacion();
-                } else {
-                    $error.text(response.message || 'Error al enviar.').show();
-                }
-            },
-            error: function (xhr) {
-                var msg = (xhr.responseJSON && xhr.responseJSON.message)
-                    ? xhr.responseJSON.message
-                    : 'Ocurrió un error inesperado. Intentá nuevamente.';
-                $error.text(msg).show();
-            },
-            complete: function () {
-                $btn.prop('disabled', false).text('Enviar presupuesto');
+        // Primero obtenemos el carrito desde el Store API de WooCommerce,
+        // luego enviamos esos datos junto con el formulario.
+        fetch('/wp-json/wc/store/v1/cart', {
+            credentials: 'same-origin',
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(function (cart) {
+            var lineas = (cart.items || []).map(function (item) {
+                return {
+                    nombre:          item.name,
+                    cantidad:        item.quantity,
+                    precio_unitario: parseFloat(item.prices.price) / 100,
+                };
+            });
+
+            return $.ajax({
+                url:    rdtPresupuesto.apiUrl,
+                method: 'POST',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', rdtPresupuesto.nonce);
+                },
+                data: JSON.stringify({
+                    nombre:   $form.find('[name=nombre]').val(),
+                    email:    $form.find('[name=email]').val(),
+                    telefono: $form.find('[name=telefono]').val(),
+                    mensaje:  $form.find('[name=mensaje]').val(),
+                    lineas:   lineas,
+                }),
+            });
+        })
+        .then(function (response) {
+            if (response.success) {
+                $('#rdt-modal-overlay').fadeOut(200);
+                $form[0].reset();
+                mostrarConfirmacion();
+            } else {
+                $error.text(response.message || 'Error al enviar.').show();
             }
+        })
+        .catch(function (err) {
+            console.error('[rdtPresupuesto] Error:', err);
+            $error.text('Ocurrió un error inesperado. Intentá nuevamente.').show();
+        })
+        .finally(function () {
+            $btn.prop('disabled', false).text('Enviar presupuesto');
         });
     });
 

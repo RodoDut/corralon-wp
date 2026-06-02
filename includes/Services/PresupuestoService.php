@@ -7,22 +7,19 @@ namespace RDT\Corralon\Services;
 use RDT\Corralon\Domain\LineaPresupuesto;
 use RDT\Corralon\Domain\SolicitudPresupuesto;
 use RDT\Corralon\Mail\MailerInterface;
-use RDT\Corralon\Repositories\CarritoRepositoryInterface;
 use RDT\Corralon\Repositories\PresupuestoRepositoryInterface;
 
 class PresupuestoService
 {
     public function __construct(
-        private readonly CarritoRepositoryInterface     $carrito,
         private readonly MailerInterface                $mailer,
         private readonly string                         $emailDestino,
         private readonly PresupuestoRepositoryInterface $presupuestoRepo,
     ) {}
 
-    public function enviar(SolicitudPresupuesto $solicitud): bool
+    /** @param LineaPresupuesto[] $lineas */
+    public function enviar(SolicitudPresupuesto $solicitud, array $lineas): bool
     {
-        $lineas = $this->carrito->getLineas();
-
         $this->presupuestoRepo->guardar($solicitud, $lineas);
 
         $asunto = 'Nueva solicitud de presupuesto de ' . $solicitud->nombre;

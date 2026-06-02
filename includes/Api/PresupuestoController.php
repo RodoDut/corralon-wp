@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RDT\Corralon\Api;
 
+use RDT\Corralon\Domain\LineaPresupuesto;
 use RDT\Corralon\Domain\SolicitudPresupuesto;
 use RDT\Corralon\Services\PresupuestoService;
 use WP_REST_Request;
@@ -48,8 +49,31 @@ class PresupuestoController
             );
         }
 
+        // Leer líneas enviadas desde el JS (Store API de WooCommerce)
+        $lineasRaw = $request->get_param('lineas') ?? [];
+        $lineas    = [];
+
+        if (is_array($lineasRaw)) {
+            foreach ($lineasRaw as $item) {
+                $nombre_producto = sanitize_text_field((string) ($item['nombre']          ?? ''));
+                $cantidad        = max(1, (int) ($item['cantidad']                         ?? 1));
+                $precio          = max(0.0, (float) ($item['precio_unitario']              ?? 0));
+
+                if ($nombre_producto === '') {
+                    continue;
+                }
+
+                $lineas[] = new LineaPresupuesto(
+                    nombre:         $nombre_producto,
+                    cantidad:       $cantidad,
+                    precioUnitario: $precio,
+                    subtotal:       $precio * $cantidad,
+                );
+            }
+        }
+
         $solicitud = new SolicitudPresupuesto($nombre, $email, $telefono, $mensaje);
-        $enviado   = $this->service->enviar($solicitud);
+        $enviado   = $this->service->enviar($solicitud, $lineas);
 
         if (!$enviado) {
             return new WP_REST_Response(
