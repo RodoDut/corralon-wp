@@ -11,6 +11,21 @@ class Plugin
         add_action( 'init', [ $this, 'onInit' ] );
         add_action( 'admin_menu', [ $this, 'onAdminMenu' ] );
         add_action( 'rest_api_init', [ $this, 'onRestApiInit' ] );
+
+        // WooCommerce no inicializa la sesión en contexto REST por defecto.
+        // Este hook fuerza la carga del carrito para que CarritoRepository
+        // pueda leer los ítems correctamente al procesar solicitudes de presupuesto.
+        add_filter( 'woocommerce_session_handler', static function ( $handler ) {
+            if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+                add_action( 'woocommerce_init', static function () {
+                    if ( WC()->session && ! WC()->session->has_session() ) {
+                        WC()->session->init();
+                    }
+                    WC()->cart->get_cart();
+                } );
+            }
+            return $handler;
+        } );
     }
 
     public function onInit(): void
