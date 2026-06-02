@@ -27,13 +27,13 @@ jobs:
         run: |
           ssh -p 65002 -i ~/.ssh/id_rsa \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "ls -la public_html/corralon/wp-content/plugins/ && echo 'Conexión OK'"
+            "ls -la domains/rdtecno.net/public_html/corralon/wp-content/plugins/ && echo 'Conexión OK'"
 
       - name: Crear carpeta del plugin si no existe
         run: |
           ssh -p 65002 -i ~/.ssh/id_rsa \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "mkdir -p public_html/corralon/wp-content/plugins/corralon-materiales"
+            "mkdir -p domains/rdtecno.net/public_html/corralon/wp-content/plugins/corralon-materiales"
 
       - name: Sync archivos via rsync
         run: |
@@ -50,4 +50,4 @@ jobs:
             --exclude='*.log' \
             -e "ssh -p 65002 -i ~/.ssh/id_rsa" \
             ./ \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/corralon/wp-content/plugins/corralon-materiales/"
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:domains/rdtecno.net/public_html/corralon/wp-content/plugins/corralon-materiales/"
