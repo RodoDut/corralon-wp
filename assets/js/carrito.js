@@ -18,7 +18,15 @@
             })
             .then(function (r) {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
-                window.location.href = cartUrl;
+                if (cartUrl) {
+                    window.location.href = cartUrl;
+                } else {
+                    btn.textContent = '✓ Agregado';
+                    setTimeout(function () {
+                        btn.disabled    = false;
+                        btn.textContent = textoOriginal;
+                    }, 2000);
+                }
             })
             .catch(function (err) {
                 console.error('[rdtCarrito] Error al agregar al carrito:', err);

@@ -34,26 +34,47 @@ class CatalogoHooks
     {
         global $post;
 
+        $en_catalogo = false;
+
+        // Caso 1: página con shortcode [catalogo_productos]
         if (
-            !is_singular()
-            || !($post instanceof \WP_Post)
-            || !has_shortcode($post->post_content, 'catalogo_productos')
+            is_a($post, 'WP_Post')
+            && has_shortcode($post->post_content, 'catalogo_productos')
         ) {
+            $en_catalogo = true;
+        }
+
+        // Caso 2: WooCommerce intercepta la URL como shop/archive
+        if (
+            function_exists('is_shop')
+            && (is_shop() || is_product_category() || is_product_tag())
+        ) {
+            $en_catalogo = true;
+        }
+
+        if (!$en_catalogo) {
             return;
         }
 
         wp_enqueue_style(
+            'rdt-barlow',
+            'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap',
+            [],
+            null
+        );
+
+        wp_enqueue_style(
             'rdt-catalogo',
             RDT_CORRALON_URL . 'assets/css/catalogo.css',
-            [],
-            (string) filemtime( RDT_CORRALON_PATH . 'assets/css/catalogo.css' )
+            ['rdt-barlow'],
+            (string) filemtime(RDT_CORRALON_PATH . 'assets/css/catalogo.css')
         );
 
         wp_register_script(
             'rdt-carrito',
             RDT_CORRALON_URL . 'assets/js/carrito.js',
             [],
-            (string) filemtime( RDT_CORRALON_PATH . 'assets/js/carrito.js' ),
+            (string) filemtime(RDT_CORRALON_PATH . 'assets/js/carrito.js'),
             true
         );
 
@@ -61,7 +82,7 @@ class CatalogoHooks
             'rdt-catalogo',
             RDT_CORRALON_URL . 'assets/js/catalogo.js',
             ['rdt-carrito'],
-            (string) filemtime( RDT_CORRALON_PATH . 'assets/js/catalogo.js' ),
+            (string) filemtime(RDT_CORRALON_PATH . 'assets/js/catalogo.js'),
             true
         );
 

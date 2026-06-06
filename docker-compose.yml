@@ -26,7 +26,9 @@ services:
       WORDPRESS_SMTP_HOST: mailhog
       WORDPRESS_SMTP_PORT: 1025
     volumes:
+      - wp_data:/var/www/html
       - ./:/var/www/html/wp-content/plugins/corralon-materiales
+      - ./wp-content/themes/modern-blue-rdtecno:/var/www/html/wp-content/themes/modern-blue-rdtecno
     depends_on:
       - mailhog
 
@@ -39,3 +41,4 @@ services:
 
 volumes:
   db_data:
+  wp_data:

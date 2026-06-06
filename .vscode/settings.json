@@ -1,4 +1,5 @@
 {
+    "intelephense.files.maxSize": 10000000,
     "intelephense.environment.phpVersion": "8.1",
     "intelephense.environment.includePaths": [
         "vendor/php-stubs/wordpress-stubs",

@@ -98,6 +98,17 @@
         });
     }
 
+    // ----------------------------------------- Botón agregar al carrito
+
+    var btnCarrito = articulo.querySelector('.rdt-detalle__btn-carrito');
+    if (btnCarrito) {
+        btnCarrito.addEventListener('click', function () {
+            if (!btnCarrito.disabled) {
+                window.rdtCarrito.agregarAlCarrito(productId, btnCarrito, cfg.cart_nonce, null);
+            }
+        });
+    }
+
     // ----------------------------------------- Botones en relacionados
 
     var grillaRelacionados = document.getElementById('rdt-relacionados-grilla');

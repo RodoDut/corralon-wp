@@ -24,7 +24,7 @@ class ProductoRepository implements ProductoRepositoryInterface
     }
 
     /** @return Producto[] */
-    public function findPaginado(int $pagina, int $por_pagina, string $categoria = ''): array
+    public function findPaginado(int $pagina, int $por_pagina, string $categoria = '', string $buscar = ''): array
     {
         if (!function_exists('wc_get_products')) {
             return [];
@@ -40,12 +40,30 @@ class ProductoRepository implements ProductoRepositoryInterface
             $args['category'] = [$categoria];
         }
 
-        $query = new \WC_Product_Query($args);
+        // La búsqueda por texto no es soportada nativamente por WC_Product_Query,
+        // así que la inyectamos mediante un filtro de WP_Query.
+        if ($buscar !== '') {
+            $buscar_sanitized = sanitize_text_field($buscar);
+            $filter = static function (array $q_args) use ($buscar_sanitized): array {
+                $q_args['s'] = $buscar_sanitized;
+                return $q_args;
+            };
+            add_filter('woocommerce_product_query_meta_query', $filter);
+            add_filter('woocommerce_product_data_store_cpt_get_products_query', $filter);
+        }
 
-        return array_map([$this, 'buildProducto'], $query->get_products());
+        $query    = new \WC_Product_Query($args);
+        $products = $query->get_products();
+
+        if ($buscar !== '') {
+            remove_filter('woocommerce_product_query_meta_query', $filter);
+            remove_filter('woocommerce_product_data_store_cpt_get_products_query', $filter);
+        }
+
+        return array_map([$this, 'buildProducto'], $products);
     }
 
-    public function contarTotal(string $categoria = ''): int
+    public function contarTotal(string $categoria = '', string $buscar = ''): int
     {
         if (!function_exists('wc_get_products')) {
             return 0;
@@ -61,9 +79,23 @@ class ProductoRepository implements ProductoRepositoryInterface
             $args['category'] = [$categoria];
         }
 
-        $query = new \WC_Product_Query($args);
+        if ($buscar !== '') {
+            $buscar_sanitized = sanitize_text_field($buscar);
+            $filter = static function (array $q_args) use ($buscar_sanitized): array {
+                $q_args['s'] = $buscar_sanitized;
+                return $q_args;
+            };
+            add_filter('woocommerce_product_data_store_cpt_get_products_query', $filter);
+        }
 
-        return count($query->get_products());
+        $query = new \WC_Product_Query($args);
+        $count = count($query->get_products());
+
+        if ($buscar !== '') {
+            remove_filter('woocommerce_product_data_store_cpt_get_products_query', $filter);
+        }
+
+        return $count;
     }
 
     /**

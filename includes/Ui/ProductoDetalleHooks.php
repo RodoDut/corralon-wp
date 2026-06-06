@@ -33,9 +33,16 @@ class ProductoDetalleHooks
         }
 
         wp_enqueue_style(
+            'rdt-barlow',
+            'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap',
+            [],
+            null
+        );
+
+        wp_enqueue_style(
             'rdt-detalle',
             RDT_CORRALON_URL . 'assets/css/detalle.css',
-            [],
+            ['rdt-barlow'],
             (string) filemtime(RDT_CORRALON_PATH . 'assets/css/detalle.css')
         );
 

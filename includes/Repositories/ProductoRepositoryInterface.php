@@ -12,9 +12,9 @@ interface ProductoRepositoryInterface
     /**
      * @return \RDT\Corralon\Domain\Producto[]
      */
-    public function findPaginado(int $pagina, int $por_pagina, string $categoria = ''): array;
+    public function findPaginado(int $pagina, int $por_pagina, string $categoria = '', string $buscar = ''): array;
 
-    public function contarTotal(string $categoria = ''): int;
+    public function contarTotal(string $categoria = '', string $buscar = ''): int;
 
     public function findById(int $id): ?\RDT\Corralon\Domain\Producto;
 

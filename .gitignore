@@ -13,3 +13,10 @@ docker-compose.override.yml
 # Sistema operativo
 .DS_Store
 Thumbs.db
+wp-content/
+verify-screenshots.js
+CONTEXTO_RODO.md
+Estado_Actual_-_Desarrollo_Web_Profesional.md
+Tutorial-Arquitectura-Plugins-WordPress.md
+design-reference.html
+docker-compose.yml

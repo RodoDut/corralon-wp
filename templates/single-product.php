@@ -29,7 +29,7 @@ while (have_posts()) :
 <?php
     else :
         $image_id  = $product->get_image_id();
-        $image_url = $image_id ? (string) wp_get_attachment_image_url($image_id, 'full') : '';
+        $image_url = $image_id ? (string) wp_get_attachment_image_url((int) $image_id, 'full') : '';
         $nombre    = $product->get_name();
         $desc      = $product->get_description() ?: $product->get_short_description();
 
@@ -43,6 +43,18 @@ while (have_posts()) :
 
         $primera_categoria_slug = !empty($categorias) ? $categorias[0]->slug : '';
 ?>
+    <nav class="rdt-detalle__breadcrumb" aria-label="<?php esc_attr_e('Ubicación', 'corralon-materiales'); ?>">
+        <a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Inicio', 'corralon-materiales'); ?></a>
+        <span class="sep" aria-hidden="true">›</span>
+        <?php if (!empty($categorias)) : ?>
+            <a href="<?php echo esc_url((string) get_term_link($categorias[0])); ?>">
+                <?php echo esc_html($categorias[0]->name); ?>
+            </a>
+            <span class="sep" aria-hidden="true">›</span>
+        <?php endif; ?>
+        <span><?php echo esc_html($nombre); ?></span>
+    </nav>
+
     <article
         class="rdt-detalle"
         data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"
@@ -50,7 +62,7 @@ while (have_posts()) :
     >
         <div class="rdt-detalle__columnas">
 
-            <!-- Columna izquierda: imagen (40%) -->
+            <!-- Columna izquierda: imagen -->
             <div class="rdt-detalle__imagen">
                 <?php if ($image_url) : ?>
                     <img
@@ -63,17 +75,18 @@ while (have_posts()) :
                 <?php endif; ?>
             </div>
 
-            <!-- Columna derecha: info (60%) -->
+            <!-- Columna derecha: info -->
             <div class="rdt-detalle__info">
-                <h1 class="rdt-detalle__nombre"><?php echo esc_html($nombre); ?></h1>
 
                 <?php if ($categorias) : ?>
                 <div class="rdt-detalle__badges">
                     <?php foreach ($categorias as $cat) : ?>
-                        <span class="catalogo-card__badge"><?php echo esc_html($cat->name); ?></span>
+                        <span class="catalogo-card__badge cat-badge"><?php echo esc_html($cat->name); ?></span>
                     <?php endforeach; ?>
                 </div>
                 <?php endif; ?>
+
+                <h1 class="rdt-detalle__nombre"><?php echo esc_html($nombre); ?></h1>
 
                 <?php if ($desc) : ?>
                 <div class="rdt-detalle__descripcion">
@@ -83,13 +96,23 @@ while (have_posts()) :
 
                 <!-- FASE 2: precio -->
 
-                <button
-                    type="button"
-                    class="button rdt-detalle__btn-presupuesto"
-                    data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"
-                >
-                    <?php esc_html_e('Solicitar presupuesto', 'corralon-materiales'); ?>
-                </button>
+                <div class="rdt-detalle__acciones">
+                    <button
+                        type="button"
+                        class="button rdt-detalle__btn-presupuesto"
+                        data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"
+                    >
+                        <?php esc_html_e('Solicitar presupuesto', 'corralon-materiales'); ?>
+                    </button>
+                    <button
+                        type="button"
+                        class="button rdt-detalle__btn-carrito"
+                        data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"
+                    >
+                        <?php esc_html_e('Agregar al carrito', 'corralon-materiales'); ?>
+                    </button>
+                </div>
+
             </div>
 
         </div><!-- /.rdt-detalle__columnas -->

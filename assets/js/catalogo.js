@@ -4,9 +4,15 @@
     var cfg = window.rdtCatalogo;
     if (!cfg) return;
 
+    // Lee parámetros de URL para soportar navegación desde la homepage
+    var urlParams  = new URLSearchParams(window.location.search);
+    var catInicial = urlParams.get('categoria') || '';
+    var buscarInicial = urlParams.get('buscar') || '';
+
     var state = {
         pagina:    1,
-        categoria: '',
+        categoria: catInicial,
+        buscar:    buscarInicial,
         cargando:  false,
         hayMas:    true,
     };
@@ -19,6 +25,39 @@
 
     if (!root || !tabsEl || !grillaEl || !spinner || !sentinel) return;
 
+    // ------------------------------------------------------------------ Buscador del catálogo
+
+    var searchInput  = document.querySelector('.catalogo-search__input');
+    var searchButton = document.querySelector('.catalogo-search__btn');
+
+    // Si vino con término de búsqueda de la homepage, mostrar en el input del catálogo
+    if (searchInput && buscarInicial) {
+        searchInput.value = buscarInicial;
+    }
+
+    function ejecutarBusqueda() {
+        if (!searchInput) return;
+        var termino = searchInput.value.trim();
+        state.buscar    = termino;
+        state.categoria = '';
+        state.pagina    = 1;
+        state.hayMas    = true;
+        grillaEl.innerHTML = '';
+        sentinel.hidden    = true;
+        renderTabs();
+        cargar();
+    }
+
+    if (searchButton) {
+        searchButton.addEventListener('click', ejecutarBusqueda);
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') ejecutarBusqueda();
+        });
+    }
+
     // ------------------------------------------------------------------ Tabs
 
     function renderTabs() {
@@ -27,13 +66,14 @@
         var items = [{ slug: '', nombre: 'Todos' }].concat(cfg.categorias);
 
         items.forEach(function (cat) {
+            var isActive = cat.slug === state.categoria && state.buscar === '';
             var btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'catalogo-tab' + (cat.slug === state.categoria ? ' active' : '');
+            btn.className = 'catalogo-tab' + (isActive ? ' active' : '');
             btn.textContent = cat.nombre;
             btn.dataset.slug = cat.slug;
             btn.setAttribute('role', 'tab');
-            btn.setAttribute('aria-selected', cat.slug === state.categoria ? 'true' : 'false');
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
             tabsEl.appendChild(btn);
         });
     }
@@ -43,11 +83,13 @@
         if (!btn) return;
 
         state.categoria = btn.dataset.slug;
+        state.buscar    = '';
         state.pagina    = 1;
         state.hayMas    = true;
         grillaEl.innerHTML = '';
         sentinel.hidden    = true;
 
+        if (searchInput) searchInput.value = '';
         renderTabs();
         cargar();
     });
@@ -67,6 +109,9 @@
         });
         if (state.categoria) {
             params.set('categoria', state.categoria);
+        }
+        if (state.buscar) {
+            params.set('buscar', state.buscar);
         }
 
         fetch(cfg.rest_url + '?' + params.toString(), {

@@ -1,92 +1,117 @@
 # Estado actual — Corralón Materiales
 
 ## Última sesión
-F04 — Historial de presupuestos completado. MVP cerrado.
+Migración de arquitectura visual: homepage delegada al tema hijo + Gutenberg.
+Implementación de búsqueda, navegación por categorías, suscripción completa con emails y usuarios WordPress.
 
 ## Completado
 
 ### Infraestructura
 - Docker local con WordPress + WooCommerce + MailHog
+- Volumen `wp_data` agregado para persistir archivos de WordPress entre reinicios de Docker
 - Plugin `corralon-materiales` con arquitectura Clean + PSR-4
 - Autoload Composer, stubs WooCommerce para Intelephense
 - Deploy automático: develop → main → Hostinger vía GitHub Actions
+- Deploy migrado de `scp-action` a **rsync via SSH**
+- Ruta correcta en Hostinger verificada: `domains/rdtecno.net/public_html/corralon/...`
+- **Tema hijo `modern-blue-rdtecno`** creado como hijo de Twenty Twenty-Five:
+  - `theme.json` con paleta completa del proyecto y tipografía Barlow/Barlow Condensed
+  - `parts/header.html` — header global sticky oscuro con logo diamonds, búsqueda, carrito con badge
+  - `parts/footer.html` — footer global oscuro con 3 columnas: logo+desc, contacto, redes SVG inline
+  - `assets/header.css` — estilos del header con prefijo `mbt-`, responsive a 768px
+  - `assets/header.js` — badge carrito (Store API), búsqueda con redirect a /catalogo/, pre-populate ?buscar=
+  - Bind mount en docker-compose.yml: `./wp-content/themes/modern-blue-rdtecno:/var/www/html/wp-content/themes/modern-blue-rdtecno`
 
 ### Dominio y datos
 - `Producto` (entidad): id, nombre, precio, precio_oferta, categorias (array), stock, descripcion, sku, imagen_url
-- `ProductoRepository`: findAll(), findPaginado(), contarTotal(), getCategorias(), findById()
-- `ProductoRepositoryInterface`: contrato completo con los 5 métodos
-- `Presupuesto` (entidad): id, nombre, email, telefono, mensaje, lineas, estado, nota_interna, fecha
-- `PresupuestoEstado`: PENDIENTE / RESPONDIDO
-- `PresupuestoRepository`: guardar(), findAll(), findById(), contarTotal(), actualizarEstado(), actualizarNota()
-- `PresupuestoRepositoryInterface`: contrato completo con los 6 métodos
+- `ProductoRepository`: findAll(), findPaginado(), contarTotal(), getCategorias()
+  - Soporte de búsqueda por texto vía filtro `woocommerce_product_data_store_cpt_get_products_query`
+- `ProductoRepositoryInterface`: contrato completo incluyendo parámetro `$buscar`
 - `LineaPresupuesto`, `SolicitudPresupuesto` (entidades de dominio)
-- `CarritoRepository` / `CarritoRepositoryInterface`
+- `CarritoRepository` / `CarritoRepositoryInterface` — archivos existentes sin uso activo
 - `MailerInterface` / `WpMailer`
+- `SuscripcionMailer` — emails de bienvenida al suscriptor y aviso al admin
 
 ### Funcionalidades MVP
 - F03 ✅ — Botón "Solicitar presupuesto" en carrito clásico WooCommerce
   - Modal + formulario + endpoint REST + email vía MailHog + confirmación al cliente
   - Botón "Finalizar compra" nativo oculto vía CSS (reversible para fase 2)
-- F01 ✅ — Catálogo de productos con filtros por categoría
+  - Bug resuelto: carrito vacío en el email. Solución: JS consulta Store API y manda líneas en el payload
+- F01 ✅ — Catálogo de productos con filtros por categoría y búsqueda
   - Shortcode [catalogo_productos] en página /catalogo/
   - Tabs horizontales por categoría (Vanilla JS, sin jQuery)
   - Carga infinita con IntersectionObserver (12 productos iniciales)
   - Botón "Solicitar presupuesto" en cada tarjeta → agrega al carrito y redirige
-  - Link al detalle en imagen y nombre de cada tarjeta
-  - Endpoint REST GET /wp-json/corralon/v1/catalogo (categoria, pagina, por_pagina, permalink)
+  - Endpoint REST GET /wp-json/corralon/v1/catalogo (categoria, buscar, pagina, por_pagina)
+  - Lee ?categoria= y ?buscar= de la URL al inicializar
   - Assets con filemtime para cache-busting automático
-  - Arquitectura preparada para precio/oferta en Fase 2 (<!-- FASE 2: precio -->)
 - F02 ✅ — Detalle de producto
-  - Plantilla single-product.php sobreescrita desde el plugin (woocommerce_locate_template)
-  - Layout 2 columnas: imagen grande (40%) + info (60%), responsive a 1 columna en mobile
-  - Badges de categoría, descripción completa, botón "Solicitar presupuesto"
-  - Sección de productos relacionados por categoría (máx 4, excluye el producto actual)
-  - Assets con filemtime, cargados condicionalmente solo en is_product()
-  - <!-- FASE 2: precio --> marcado en plantilla y JS
-- F04 ✅ — Historial de presupuestos (panel admin)
-  - CPT 'presupuesto': no público, sin menú nativo, datos en post_meta
-  - PresupuestoService persiste antes de enviar el email
-  - Submenú WooCommerce → Presupuestos (capacidad manage_woocommerce)
-  - Listado paginado con badges de estado (pendiente/respondido)
-  - Vista de detalle: datos cliente, tabla de productos, total estimado
-  - Gestión de estado y nota interna con formularios nativos WordPress + nonce
-  - AdminPresupuestosController procesa POST en admin_init con check_admin_referer()
+  - Plantilla `templates/single-product.php` con layout dos columnas
+  - Breadcrumb, badge de categoría verde, nombre en Barlow Condensed
+  - Descripción con borde izquierdo azul
+  - Indicador de stock, bloque precio reservado (Fase 2)
+  - Dos botones: "Solicitar presupuesto" (primario azul) + "Agregar al carrito" (secundario outline)
+  - Sección productos relacionados (grilla 4 columnas)
+  - Assets: `detalle.css` + `detalle.js`, Google Fonts Barlow registrado
+- Homepage ✅ — Shortcode [home_corralon] (solo contenido, sin header/footer propios)
+  - Barra de categorías con navegación a /catalogo/?categoria=SLUG
+  - Hero full-width: título Barlow Condensed, subtexto, botón "Ver catálogo" → /catalogo/
+  - Grilla de categorías con navegación a /catalogo/?categoria=SLUG
+  - Banner de suscripción con formulario funcional
+  - Header y footer provistos por el tema hijo (no por el shortcode)
+- Suscripción ✅ — Flujo completo opt-in simple
+  - Endpoint REST POST /corralon/v1/suscripcion
+  - Crea usuario WordPress con rol `subscriber` + meta `rdt_suscriptor=1`
+  - Evita duplicados (verifica email_exists antes de crear)
+  - Guarda registro redundante en wp_options (rdt_corralon_suscriptores)
+  - Email de bienvenida al suscriptor (vía MailHog en local)
+  - Email de aviso al admin (admin_email de WordPress)
+  - Modal "¡Suscripto! Revisá tu correo" con animación fadeIn
+  - Modal se cierra con botón, click fuera, o tecla Escape
+- Búsqueda ✅ — Desde header del tema y desde homepage
+  - Input del header del tema redirige a /catalogo/?buscar=TÉRMINO
+  - Catálogo pre-popula el input y filtra resultados al inicializar
+- Endpoint suscripción ✅ — /corralon/v1/suscripcion con SuscripcionMailer inyectado
 
-### Arquitectura JS
-- `carrito.js` — módulo compartido, expone `window.rdtCarrito.agregarAlCarrito()`
-- `catalogo.js` — tabs + carga infinita + IntersectionObserver, delega carrito a rdtCarrito
-- `detalle.js` — botón principal + relacionados, delega carrito a rdtCarrito
+### Arquitectura visual actual
+- **Tema hijo** `modern-blue-rdtecno`: header global, footer global, paleta, tipografía
+- **Plugin**: lógica de negocio, shortcodes funcionales, endpoints REST
+- **Homepage**: shortcode [home_corralon] dentro de página WordPress con plantilla "Blanco"
+  El shortcode provee contenido (barra cats, hero, categorías, banner).
+  El tema provee header y footer.
+- **Catálogo**: shortcode [catalogo_productos] — sin header/footer propios, los hereda del tema
 
-### Conceptos aprendidos
-- Constructor promotion con `private readonly`
-- Dependency Inversion: depender de interfaces, no de implementaciones
-- MailHog: captura de emails en entorno Docker local
-- Cart Block vs carrito clásico de WooCommerce
-- filemtime(): versionado automático de assets para evitar caché del browser
-- IntersectionObserver: carga infinita sin scroll listeners
-- WC_Product_Query: filtros por categoría y paginación
-- woocommerce_locate_template: sobreescribir plantillas de WooCommerce desde un plugin
-- wp_kses_post(): sanitización de HTML en outputs de WordPress
-- wp_register_script() idempotente: registrar el mismo handle múltiples veces es seguro
-- Módulo JS compartido via window global + dependencias de WordPress
-- DRY aplicado a assets JS: extraer lógica común a módulo independiente
-- CPT como capa de persistencia: wp_insert_post + post_meta para datos de dominio
-- wp_update_post() post-insert para título con ID
-- check_admin_referer() + wp_safe_redirect() + exit: patrón seguro para POST en admin
-- sanitize_key() / sanitize_textarea_field(): sanitización por tipo de dato
-- Roles WordPress: Shop Manager con manage_woocommerce para clientes de negocio
-- Verificación estática de código con Claude vía MCP
+### Clases UI
+- `includes/Ui/WoocommerceHooks.php` — redirige botones nativos de WooCommerce a /catalogo/
+- `includes/Ui/HomeHooks.php` — registra [home_corralon] + enqueue condicional (catalog_url, nonce, rest_url_suscripcion)
+- `includes/Ui/CatalogoHooks.php` — registra [catalogo_productos] + enqueue condicional
+- `includes/Ui/ProductoDetalleHooks.php` — plantilla single-product + enqueue condicional
+- `includes/Ui/CarritoPresupuestoHooks.php` — hooks del carrito + modal presupuesto
 
-## Pendiente — Fase 2
-- Mostrar precios en catálogo y detalle (marcadores <!-- FASE 2: precio --> ya colocados)
-- Pasarelas de pago: MercadoPago o Stripe
-- Botón "Finalizar compra" nativo de WooCommerce (oculto en MVP)
-- Eliminar shortcode de prueba `ShortcodeProductosTest`
+### Conceptos aprendidos esta sesión
+- Tema hijo de Twenty Twenty-Five: `style.css` con `Template: twentytwentyfive` es suficiente para heredar
+- `parts/header.html` y `parts/footer.html` en el tema hijo sobreescriben los del padre automáticamente
+- FSE (Full Site Editing): WordPress resuelve template parts del tema hijo primero
+- Bind mount en docker-compose.yml para desarrollo del tema hijo en local
+- División correcta de responsabilidades: tema = estructura visual global, plugin = lógica de negocio
+- `wp_create_user()` + `set_role()` + `add_user_meta()` para registrar suscriptores como usuarios WordPress
+- `email_exists()` para evitar duplicados antes de crear usuario
+- Modal JS puro: createElement + estilos inline + animación CSS inyectada dinámicamente
+- `woocommerce_product_data_store_cpt_get_products_query` para inyectar búsqueda por texto en WC_Product_Query
+
+## Pendiente MVP
+- F04 — Historial de presupuestos (panel admin)
+- Eliminar shortcode de prueba `ShortcodeProductosTest` antes de producción
+- Homepage: reconstruir visualmente en Gutenberg (actualmente muestra el shortcode [home_corralon])
 
 ## Próxima sesión
-Definir prioridades post-MVP: precio + pasarela, o deploy a producción primero.
+- F04 historial de presupuestos (panel admin)
+- O arrancar reconstrucción de homepage en Gutenberg
 
 ## Deuda técnica conocida
 - `is_cart()` en capa UI (`CarritoPresupuestoHooks`) — aceptable para MVP
-- `guardar()` en PresupuestoService no maneja fallo del repositorio — agregar logging en Fase 2
-- `contarTotal()` con posts_per_page=-1 — suficiente para MVP, revisar con volúmenes altos
+- Versionado de assets con `'1.0.0'` hardcodeado en `CarritoPresupuestoHooks` — migrar a filemtime
+- `CarritoRepository` / `CarritoRepositoryInterface` — archivos sin uso activo. Eliminar o reutilizar en Fase 2
+- `home.css` y `home.js` — vaciados, pendiente eliminar cuando se migre homepage a Gutenberg completamente
+- Suscriptores en wp_options (rdt_corralon_suscriptores) — registro redundante, eliminar en Fase 2
+- Homepage en shortcode — migrar a Gutenberg completo post-MVP

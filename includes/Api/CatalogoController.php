@@ -25,6 +25,7 @@ class CatalogoController
             'permission_callback' => '__return_true',
             'args'                => [
                 'categoria'  => ['type' => 'string',  'default' => ''],
+                'buscar'     => ['type' => 'string',  'default' => ''],
                 'pagina'     => ['type' => 'integer', 'default' => 1,  'minimum' => 1],
                 'por_pagina' => ['type' => 'integer', 'default' => 12, 'minimum' => 1, 'maximum' => 48],
             ],
@@ -34,17 +35,18 @@ class CatalogoController
     public function handle(WP_REST_Request $request): WP_REST_Response
     {
         $categoria  = sanitize_text_field((string) $request->get_param('categoria'));
+        $buscar     = sanitize_text_field((string) $request->get_param('buscar'));
         $pagina     = (int) $request->get_param('pagina');
         $por_pagina = (int) $request->get_param('por_pagina');
 
-        $productos   = $this->repository->findPaginado($pagina, $por_pagina, $categoria);
-        $total       = $this->repository->contarTotal($categoria);
-        $paginas     = $total > 0 ? (int) ceil($total / $por_pagina) : 0;
+        $productos = $this->repository->findPaginado($pagina, $por_pagina, $categoria, $buscar);
+        $total     = $this->repository->contarTotal($categoria, $buscar);
+        $paginas   = $total > 0 ? (int) ceil($total / $por_pagina) : 0;
 
         return new WP_REST_Response([
-            'productos'    => array_map([$this, 'serializeProducto'], $productos),
-            'total'        => $total,
-            'paginas'      => $paginas,
+            'productos'     => array_map([$this, 'serializeProducto'], $productos),
+            'total'         => $total,
+            'paginas'       => $paginas,
             'pagina_actual' => $pagina,
         ], 200);
     }

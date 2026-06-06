@@ -2,28 +2,64 @@
    F02 — Detalle de producto
    ================================================================ */
 
+/* ---- Variables ---- */
+:root {
+    --c-bg:          #F4F6F8;
+    --c-surface:     #FFFFFF;
+    --c-text:        #1C2B3A;
+    --c-muted:       #5A6A78;
+    --c-border:      #DDE3EA;
+    --c-blue:        #3A8FD4;
+    --c-blue-dark:   #2270AE;
+    --c-blue-light:  #EBF4FC;
+    --c-green:       #7BBF3A;
+    --c-green-dark:  #5A9420;
+    --c-green-light: #F0F8E8;
+    --c-badge-bg:    #EEF2F6;
+    --c-badge-text:  #3A5068;
+}
+
 /* ---- Contenedor principal ---- */
 .rdt-detalle-wrap {
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 32px 16px 48px;
+    padding: 24px 20px 48px;
+}
+
+/* ---- Breadcrumb ---- */
+.rdt-detalle__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--c-muted);
+    margin-bottom: 20px;
+}
+
+.rdt-detalle__breadcrumb a {
+    color: var(--c-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.rdt-detalle__breadcrumb a:hover { text-decoration: underline; }
+
+.rdt-detalle__breadcrumb .sep {
+    font-size: 12px;
+    color: var(--c-border);
 }
 
 /* ---- Layout dos columnas ---- */
 .rdt-detalle__columnas {
     display: grid;
-    grid-template-columns: 40% 1fr;
-    gap: 40px;
-    align-items: start;
-    margin-bottom: 56px;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    max-width: 900px;
 }
 
 @media (max-width: 768px) {
-    .rdt-detalle__columnas {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
+    .rdt-detalle__columnas { grid-template-columns: 1fr; }
 }
 
 /* ---- Imagen ---- */
@@ -32,73 +68,128 @@
     top: 24px;
 }
 
+@media (max-width: 768px) {
+    .rdt-detalle__imagen { position: static; }
+}
+
 .rdt-detalle__img {
     width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+    aspect-ratio: 1 / 1;
     object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--c-border);
+    display: block;
 }
 
 .rdt-detalle__img-placeholder {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background: #ebebeb;
+    background: var(--c-blue-light);
     border-radius: 10px;
-}
-
-@media (max-width: 768px) {
-    .rdt-detalle__imagen {
-        position: static;
-    }
+    border: 1px solid var(--c-border);
 }
 
 /* ---- Info: columna derecha ---- */
 .rdt-detalle__info {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
-.rdt-detalle__nombre {
-    margin: 0;
-    font-size: 1.75em;
-    font-weight: 700;
-    line-height: 1.25;
-    color: #111;
-}
-
-/* ---- Badges (mismo estilo que catálogo) ---- */
+/* ---- Badges ---- */
 .rdt-detalle__badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
+}
+
+.catalogo-card__badge.cat-badge {
+    background: var(--c-green-light);
+    color: var(--c-green-dark);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
+
+/* ---- Nombre ---- */
+.rdt-detalle__nombre {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--c-text);
+    letter-spacing: -.2px;
+    margin: 0;
 }
 
 /* ---- Descripción ---- */
 .rdt-detalle__descripcion {
-    font-size: 1em;
-    line-height: 1.65;
-    color: #444;
+    font-size: 14px;
+    color: var(--c-muted);
+    line-height: 1.7;
+    border-left: 3px solid var(--c-blue);
+    padding-left: 14px;
 }
 
-.rdt-detalle__descripcion p:first-child {
-    margin-top: 0;
-}
+.rdt-detalle__descripcion p { margin: 0; }
 
-.rdt-detalle__descripcion p:last-child {
-    margin-bottom: 0;
-}
-
-/* FASE 2: precio */
-
-/* ---- Botón solicitar presupuesto ---- */
-.rdt-detalle__btn-presupuesto {
+/* ---- Stock ---- */
+.rdt-detalle__stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2A7A3A;
+    background: #E8F5EC;
+    padding: 7px 13px;
+    border-radius: 6px;
     align-self: flex-start;
-    padding: .65em 1.6em;
+}
+
+/* ---- Bloque precio (Fase 2) ---- */
+.rdt-detalle__precio-bloque {
+    background: var(--c-badge-bg);
+    border-radius: 7px;
+    padding: 12px 16px;
+    border: 1px dashed var(--c-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ---- Acciones ---- */
+.rdt-detalle__acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ---- Botón principal (solicitar presupuesto) ---- */
+.rdt-detalle__btn-presupuesto {
+    background: var(--c-blue);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 13px 22px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 1em;
+    font-family: 'Barlow', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background .15s, transform .1s;
+    width: 100%;
+}
+
+.rdt-detalle__btn-presupuesto:hover {
+    background: var(--c-blue-dark);
+    transform: translateY(-1px);
 }
 
 .rdt-detalle__btn-presupuesto:disabled {
@@ -106,29 +197,63 @@
     cursor: wait;
 }
 
+/* ---- Botón secundario (agregar al carrito) ---- */
+.rdt-detalle__btn-carrito {
+    background: transparent;
+    color: var(--c-text);
+    border: 1.5px solid var(--c-border);
+    border-radius: 7px;
+    padding: 11px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: border-color .15s, background .15s;
+    width: 100%;
+}
+
+.rdt-detalle__btn-carrito:hover {
+    border-color: var(--c-blue);
+    background: var(--c-blue-light);
+}
+
+.rdt-detalle__btn-carrito:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
 /* ---- Relacionados ---- */
 .rdt-relacionados {
-    border-top: 1px solid #e4e4e4;
-    padding-top: 40px;
+    margin-top: 48px;
 }
 
 .rdt-relacionados__titulo {
-    margin: 0 0 24px;
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #222;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--c-border);
+    letter-spacing: .2px;
 }
 
 .rdt-relacionados__grilla {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 16px;
 }
 
 @media (max-width: 768px) {
-    .rdt-relacionados__grilla {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .rdt-relacionados__grilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .rdt-relacionados__grilla { grid-template-columns: 1fr; }
 }
 
 /* ---- Link de tarjeta (sin decoración) ---- */

@@ -20,11 +20,17 @@ class Plugin
         $productoRepo    = new \RDT\Corralon\Repositories\ProductoRepository();
         $presupuestoRepo = new \RDT\Corralon\Repositories\PresupuestoRepository();
 
+        ( new \RDT\Corralon\Ui\HomeHooks() )->register();
         ( new \RDT\Corralon\Ui\CarritoPresupuestoHooks() )->register();
         ( new \RDT\Corralon\Ui\CatalogoHooks( $productoRepo ) )->register();
         ( new \RDT\Corralon\Ui\ProductoDetalleHooks( $productoRepo ) )->register();
         ( new \RDT\Corralon\Admin\AdminPresupuestosPage( $presupuestoRepo ) )->register();
         ( new \RDT\Corralon\Admin\AdminPresupuestosController( $presupuestoRepo ) )->register();
+
+        // Redirige los botones nativos de WooCommerce al catálogo custom
+        ( new \RDT\Corralon\Ui\WoocommerceHooks(
+            home_url('/catalogo/')
+        ) )->register();
     }
 
     public function onAdminMenu(): void {}
@@ -43,6 +49,10 @@ class Plugin
 
         ( new \RDT\Corralon\Api\CatalogoController(
             new \RDT\Corralon\Repositories\ProductoRepository()
+        ) )->registerRoutes();
+
+        ( new \RDT\Corralon\Api\SuscripcionController(
+            new \RDT\Corralon\Mail\SuscripcionMailer()
         ) )->registerRoutes();
     }
 }
