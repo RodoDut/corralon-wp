@@ -1,0 +1,38 @@
+name: Deploy tema hijo a Hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'wp-content/themes/modern-blue-rdtecno/**'
+
+jobs:
+  deploy-theme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 65002 -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Crear carpeta del tema si no existe
+        run: |
+          ssh -p 65002 -i ~/.ssh/id_rsa \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p domains/rdtecno.net/public_html/corralon/wp-content/themes/modern-blue-rdtecno"
+
+      - name: Sync archivos del tema via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            -e "ssh -p 65002 -i ~/.ssh/id_rsa" \
+            ./wp-content/themes/modern-blue-rdtecno/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:domains/rdtecno.net/public_html/corralon/wp-content/themes/modern-blue-rdtecno/"
