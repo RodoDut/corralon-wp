@@ -44,7 +44,7 @@ class AdminPresupuestosPage
             'rdt-admin-presupuestos',
             RDT_CORRALON_URL . 'assets/css/admin-presupuestos.css',
             [],
-            '1.0.0'
+            (string) filemtime( RDT_CORRALON_PATH . 'assets/css/admin-presupuestos.css' )
         );
     }
 
