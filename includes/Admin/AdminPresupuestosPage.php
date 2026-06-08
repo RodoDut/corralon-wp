@@ -101,17 +101,17 @@ class AdminPresupuestosPage
                             $estadoClass = $p->estado === PresupuestoEstado::RESPONDIDO ? 'rdt-badge--respondido' : 'rdt-badge--pendiente';
                         ?>
                         <tr>
-                            <td><?php echo esc_html((string) $p->id); ?></td>
-                            <td><?php echo esc_html($p->fecha->format('d/m/Y H:i')); ?></td>
-                            <td><?php echo esc_html($p->nombre); ?></td>
-                            <td><?php echo esc_html($p->telefono); ?></td>
-                            <td><?php echo esc_html((string) count($p->lineas)); ?></td>
-                            <td>
+                            <td data-label="#"><?php echo esc_html((string) $p->id); ?></td>
+                            <td data-label="Fecha"><?php echo esc_html($p->fecha->format('d/m/Y H:i')); ?></td>
+                            <td data-label="Cliente"><?php echo esc_html($p->nombre); ?></td>
+                            <td data-label="Teléfono"><?php echo esc_html($p->telefono); ?></td>
+                            <td data-label="Productos"><?php echo esc_html((string) count($p->lineas)); ?></td>
+                            <td data-label="Estado">
                                 <span class="rdt-badge <?php echo esc_attr($estadoClass); ?>">
                                     <?php echo esc_html($estadoLabel); ?>
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="Acciones">
                                 <a href="<?php echo esc_url($detUrl); ?>" class="button button-small">Ver detalle</a>
                             </td>
                         </tr>
