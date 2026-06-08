@@ -21,17 +21,19 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 65002 -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -p 65002 -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Verificar conexión SSH
         run: |
           ssh -p 65002 -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             "ls -la domains/rdtecno.net/public_html/corralon/wp-content/plugins/ && echo 'Conexión OK'"
 
       - name: Crear carpeta del plugin si no existe
         run: |
           ssh -p 65002 -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             "mkdir -p domains/rdtecno.net/public_html/corralon/wp-content/plugins/corralon-materiales"
 
@@ -48,6 +50,6 @@ jobs:
             --exclude='wp-content' \
             --exclude='.env' \
             --exclude='*.log' \
-            -e "ssh -p 65002 -i ~/.ssh/id_rsa" \
+            -e "ssh -p 65002 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             ./ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:domains/rdtecno.net/public_html/corralon/wp-content/plugins/corralon-materiales/"
