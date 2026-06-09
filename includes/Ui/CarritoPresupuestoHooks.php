@@ -41,8 +41,9 @@ class CarritoPresupuestoHooks
         );
 
         wp_localize_script('rdt-presupuesto', 'rdtPresupuesto', [
-            'apiUrl' => rest_url('rdt/v1/presupuesto'),
-            'nonce'  => wp_create_nonce('wp_rest'),
+            'apiUrl'        => rest_url('rdt/v1/presupuesto'),
+            'nonce'         => wp_create_nonce('wp_rest'),
+            'storeApiNonce' => wp_create_nonce('wc_store_api'),
         ]);
     }
 }

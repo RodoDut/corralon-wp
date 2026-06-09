@@ -66,6 +66,9 @@
         // luego enviamos esos datos junto con el formulario.
         fetch('/wp-json/wc/store/v1/cart', {
             credentials: 'same-origin',
+            headers: {
+                'Nonce': rdtPresupuesto.storeApiNonce,
+            },
         })
         .then(function (r) {
             if (!r.ok) throw new Error('HTTP ' + r.status);
