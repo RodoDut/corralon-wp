@@ -13,10 +13,17 @@ docker-compose.override.yml
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Archivos de desarrollo local
 wp-content/
 verify-screenshots.js
+docker-compose.yml
+design-reference.html
+
+# Archivos internos de sesión y documentación de trabajo
 CONTEXTO_RODO.md
+ESTADO_ACTUAL.md
+SPEC.md
 Estado_Actual_-_Desarrollo_Web_Profesional.md
 Tutorial-Arquitectura-Plugins-WordPress.md
-design-reference.html
-docker-compose.yml
+Tutorial-Deploy-SSH-Hostinger.md
