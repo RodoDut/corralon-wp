@@ -43,7 +43,9 @@ corralon-materiales/
     │   ├── ProductoRepositoryInterface.php
     │   ├── ProductoRepository.php
     │   ├── PresupuestoRepositoryInterface.php
-    │   └── PresupuestoRepository.php
+    │   ├── PresupuestoRepository.php
+    │   ├── CarritoRepositoryInterface.php  ← Planificado para Fase 2
+    │   └── CarritoRepository.php           ← Planificado para Fase 2
     ├── Services/                 ← Lógica de negocio; orquesta repositorios y mailers
     │   ├── ProductoService.php
     │   └── PresupuestoService.php
@@ -125,6 +127,16 @@ La plantilla `templates/single-product.php` sobreescribe la de WooCommerce con f
 | `GET` | `/wp-json/corralon/v1/catalogo` | Catálogo paginado con filtros por categoría y búsqueda |
 | `POST` | `/wp-json/rdt/v1/presupuesto` | Envía solicitud de presupuesto con líneas del carrito |
 | `POST` | `/wp-json/rdt/v1/suscripcion` | Registra suscriptor como usuario WordPress |
+
+---
+
+## Roadmap — Fase 2
+
+`CarritoRepository` y `CarritoRepositoryInterface` están presentes en el código pero sin uso activo en el MVP. Están preparados para la Fase 2, que incluye:
+
+- Precios visibles en catálogo y detalle de producto
+- Pasarela de pago (MercadoPago)
+- `ScraperProductoRepository`: nueva implementación de `ProductoRepositoryInterface` que consume un catálogo multi-proveedor generado por scraping vía N8N y almacenado en Supabase — sin modificar `ProductoService` ni los controllers existentes (OCP aplicado)
 
 ---
 
